@@ -5,4 +5,13 @@ edition = "2021"
 
 [dependencies]
 libbpf-rs = "0.23.3"
+structopt = "0.3.26"
 xsk-rs = "0.6.1"
+
+
+[dev-dependencies]
+criterion = "0.4"
+
+[[bench]]
+name = "af_xdp_bench"
+harness = false
