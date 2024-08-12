@@ -80,3 +80,12 @@ impl fmt::Display for BenchmarkMetrics {
         Ok(())
     }
 }
+
+impl fmt::Display for SocketType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            SocketType::Afxdp => write!(f, "AF_XDP"),
+            SocketType::Udp => write!(f, "UDP"),
+        }
+    }
+}
