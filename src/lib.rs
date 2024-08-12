@@ -8,6 +8,8 @@ use xsk_rs::{
     CompQueue, FillQueue, FrameDesc, RxQueue, Socket, TxQueue, Umem,
 };
 
+pub mod metrics;
+
 /*
 Safety NOTE
     - When a frame / address has been submitted to the fill queue or tx ring, do not use it again until you have consumed it from either the completion queue or rx ring.
