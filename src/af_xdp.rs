@@ -152,7 +152,7 @@ fn run_tx_thread<const BATCH_SIZE: usize>(
     stats: Arc<BenchmarkMetrics>,
     bench_duration: u64,
 ) {
-    // Prepare batch
+    // NOTE: Prepare batch
     let mut batch = vec![FrameDesc::default(); BATCH_SIZE];
     let mut packets_sent = 0;
     let start_time = Instant::now();
@@ -185,7 +185,7 @@ fn run_tx_thread<const BATCH_SIZE: usize>(
     let n = unsafe { xsk.cq.consume(&mut completed) };
     if n > 0 {
         todo!();
-        // process completed transmissions
+        // NOTE: process completed transmissions
         stats.total_packets_received.fetch_add(n, Ordering::Relaxed);
     }
 
@@ -194,7 +194,7 @@ fn run_tx_thread<const BATCH_SIZE: usize>(
         .fetch_add(packets_sent, Ordering::Relaxed);
 }
 
-//TODO: Remove generic, add explicity type later
+//TODO: Remove generic, add explicit type later
 fn generate_test_packet<T>(data: T) {
     todo!();
 }
