@@ -45,11 +45,6 @@ fn try_xdp_tracer(ctx: XdpContext) -> Result<u32, u32> {
 
     Ok(xdp_action::XDP_PASS)
 }
-//
-// mod xdp_actions {
-//     pub const XDP_ABORTED: u32 = 0;
-//     pub const XDP_PASS: u32 = 2;
-// }
 
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
