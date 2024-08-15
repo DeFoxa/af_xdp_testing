@@ -198,3 +198,10 @@ fn run_tx_thread<const BATCH_SIZE: usize>(
 fn generate_test_packet<T>(data: T) {
     todo!();
 }
+
+fn current_time_ns() -> u64 {
+    let now = std::time::SystemTime::now();
+    now.duration_since(std::time::UNIX_EPOCH)
+        .unwrap()
+        .as_nanos() as u64
+}

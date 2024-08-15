@@ -1,0 +1,8 @@
+[package]
+name = "xdp-trace-ebpf"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+aya = "0.12.0"
+aya-log = "0.2.0"

@@ -1,17 +1,6 @@
-[package]
-name = "af_xdp"
-version = "0.1.0"
-edition = "2021"
 
-[dependencies]
-libbpf-rs = "0.23.3"
-structopt = "0.3.26"
-xsk-rs = "0.6.1"
+[workspace]
+members = [
+  "crates/af_xdp", "crates/xdp-trace-ebpf",
+]
 
-
-[dev-dependencies]
-criterion = "0.4"
-
-[[bench]]
-name = "af_xdp_bench"
-harness = false
