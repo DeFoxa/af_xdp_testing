@@ -7,6 +7,9 @@ edition = "2021"
 libbpf-rs = "0.23.3"
 structopt = "0.3.26"
 xsk-rs = "0.6.1"
+aya = { git = "https://github.com/aya-rs/aya", branch = "main" }
+aya-log = { git = "https://github.com/aya-rs/aya", branch = "main" }
+xdp-trace-ebpf = { path = "../xdp-trace-ebpf" }
 
 
 [dev-dependencies]
