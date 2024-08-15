@@ -12,13 +12,6 @@ use xsk_rs::{
     CompQueue, FillQueue, FrameDesc, RxQueue, Socket, TxQueue, Umem,
 };
 
-/*
-Safety NOTE
-    - When a frame / address has been submitted to the fill queue or tx ring, do not use it again until you have consumed it from either the completion queue or rx ring.
-
-   -  Do not use one UMEM's frame descriptors to access frames of another, different UMEM.
-*/
-
 static SENDER_DONE: AtomicBool = AtomicBool::new(false);
 
 pub struct Xsk {
