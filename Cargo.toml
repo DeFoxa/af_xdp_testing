@@ -1,6 +1,7 @@
 
 [workspace]
 members = [
-  "crates/af_xdp", "crates/xdp-trace-ebpf",
+  "crates/af_xdp", 
+  # "crates/xdp-trace-ebpf",
 ]
 

@@ -6,10 +6,10 @@ edition = "2021"
 [dependencies]
 aya-ebpf = { git = "https://github.com/aya-rs/aya", branch = "main" }
 aya-log-ebpf = { git = "https://github.com/aya-rs/aya", branch = "main" }
-#
+
 # [build-dependencies]
 # aya-build = { git = "https://github.com/aya-rs/aya", branch = "main" }
-#
+
 [[bin]]
 name = "xdp-trace-ebpf"
 path = "src/main.rs"
@@ -29,4 +29,5 @@ rpath = false
 lto = true
 panic = "abort"
 codegen-units = 1
+
 

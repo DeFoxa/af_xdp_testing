@@ -3,6 +3,10 @@ name = "af_xdp"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+name = "lib"
+path = "src/lib.rs"
+
 [dependencies]
 libbpf-rs = "0.23.3"
 structopt = "0.3.26"
@@ -10,6 +14,10 @@ xsk-rs = "0.6.1"
 aya = { git = "https://github.com/aya-rs/aya", branch = "main" }
 aya-log = { git = "https://github.com/aya-rs/aya", branch = "main" }
 xdp-trace-ebpf = { path = "../xdp-trace-ebpf" }
+eyre = "0.6.12"
+tokio = { version = "1.39.2", features = ["full"] }
+log = "0.4.22"
+env_logger = "0.11.5"
 
 
 [dev-dependencies]
@@ -18,3 +26,8 @@ criterion = "0.4"
 [[bench]]
 name = "af_xdp_bench"
 harness = false
+
+[[bin]]
+name = "test_xdp_binary"
+path = "src/bin/test_xdp_binary.rs"
+
