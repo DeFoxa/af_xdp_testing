@@ -8,12 +8,18 @@ use aya::{
 use aya_log::BpfLogger;
 use env_logger::{Builder, Env};
 use eyre::Result;
+use lib::udp::setup_udp_server;
 use log::info;
+use std::thread;
 use tokio::signal;
 
 #[tokio::main]
 async fn main() -> Result<()> {
     env_logger::init();
+
+    thread::spawn(|| {
+        setup_udp_server();
+    });
 
     let mut bpf = Bpf::load(include_bytes_aligned!(
         "../../../../target/bpfel-unknown-none/release/xdp-trace-ebpf"
