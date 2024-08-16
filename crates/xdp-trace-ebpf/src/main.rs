@@ -63,6 +63,7 @@ fn try_should_process_packet(ctx: &XdpContext) -> Result<bool, ()> {
     let eth = unsafe { ptr_at::<EthHdr>(ctx, 0) }?;
 
     let ether_type = unsafe { ptr::read_unaligned(ptr::addr_of!((*eth).ether_type)) };
+
     if ether_type != EtherType::Ipv4 {
         return Ok(false);
     }
@@ -75,7 +76,9 @@ fn try_should_process_packet(ctx: &XdpContext) -> Result<bool, ()> {
 
     let udp = unsafe { ptr_at::<UdpHdr>(ctx, EthHdr::LEN + Ipv4Hdr::LEN) }?;
 
-    let dst_port = u16::from_be(udp.dest);
+    let dst_port = u16::from_be(unsafe { ptr::read_unaligned(ptr::addr_of!((*udp).dest)) });
+
+    info!(ctx, "UDP packet detected, port: {}", dst_port);
 
     Ok(dst_port == 7777)
 }
