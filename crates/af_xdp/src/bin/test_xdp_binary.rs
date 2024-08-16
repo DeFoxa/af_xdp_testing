@@ -11,10 +11,18 @@ use eyre::Result;
 use lib::udp::setup_udp_server;
 use log::info;
 use std::thread;
+use structopt::StructOpt;
 use tokio::signal;
+
+#[derive(Debug, StructOpt)]
+struct Opt {
+    #[structopt(short, long, default_value = "xsk_test_dev1@xsk_test_dev2")]
+    iface: String,
+}
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    let opt = Opt::from_args();
     env_logger::init();
 
     thread::spawn(|| {
@@ -31,7 +39,11 @@ async fn main() -> Result<()> {
 
     let program: &mut Xdp = bpf.program_mut("xdp_tracer").unwrap().try_into()?;
     program.load()?;
-    program.attach("lo", XdpFlags::default())?;
+    program.attach(
+        /* &opt.iface */ "enp97s0f1",
+        /* XdpFlags::SKB_MODE */ XdpFlags::default(),
+    )?;
+    info!("attached xdp program to inferface; {}", opt.iface);
 
     info!("waiting for ctrl-c");
     signal::ctrl_c().await?;
