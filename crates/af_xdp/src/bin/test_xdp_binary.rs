@@ -43,7 +43,6 @@ async fn main() -> Result<()> {
         /* &opt.iface */ "enp97s0f1",
         /* XdpFlags::SKB_MODE */ XdpFlags::default(),
     )?;
-    info!("attached xdp program to inferface; {}", opt.iface);
 
     info!("waiting for ctrl-c");
     signal::ctrl_c().await?;
