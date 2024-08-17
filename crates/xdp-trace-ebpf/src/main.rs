@@ -3,9 +3,9 @@
 
 use aya_ebpf::{
     bindings::xdp_action,
-    helpers::bpf_ktime_get_ns,
+    helpers::{bpf_ktime_get_ns, bpf_redirect_map},
     macros::{map, xdp},
-    maps::PerfEventArray,
+    maps::{PerfEventArray, XskMap},
     programs::XdpContext,
 };
 use aya_log_ebpf::info;
@@ -26,6 +26,9 @@ struct XdpEvent {
 
 #[map(name = "EVENTS")]
 static mut EVENTS: PerfEventArray<XdpEvent> = PerfEventArray::new(0);
+
+#[map(name = "XSKS_MAP")]
+static mut XSKS_MAP: XskMap = XskMap::with_max_entries(1, 0);
 
 #[xdp]
 pub fn xdp_tracer(ctx: XdpContext) -> u32 {
@@ -48,9 +51,9 @@ fn try_xdp_tracer(ctx: &XdpContext) -> Result<u32, u32> {
 
     let udp = ptr_at::<UdpHdr>(ctx, EthHdr::LEN + Ipv4Hdr::LEN)?;
     let dst_port = u16::from_be(unsafe { (*udp).dest });
-    let src_port = u16::from_be(unsafe { (*udp).source });
+    let _src_port = u16::from_be(unsafe { (*udp).source });
 
-    if src_port == 7777 || dst_port == 7777 {
+    if dst_port == 7777 {
         let event = XdpEvent {
             timestamp: unsafe { bpf_ktime_get_ns() },
             packet_size: (ctx.data_end() - ctx.data()) as u32,
@@ -60,6 +63,8 @@ fn try_xdp_tracer(ctx: &XdpContext) -> Result<u32, u32> {
             EVENTS.output(ctx, &event, 0);
         }
         info!(ctx, "Packet on port 7777 detected");
+        // currently set up to notify when packet on port 7777, but allow all traffic to pass.
+        // TODO: setup af_xdp socket and redirect packets on 7777 to af_xdp socket
     }
 
     Ok(xdp_action::XDP_PASS)
@@ -100,3 +105,47 @@ fn ptr_at<T>(ctx: &XdpContext, offset: usize) -> Result<*const T, u32> {
 fn panic(_info: &PanicInfo) -> ! {
     loop {}
 }
+
+// FUTURE IMPL
+//
+// fn try_xdp_router(ctx: &XdpContext) -> Result<u32, u32> {
+//     let eth = ptr_at::<EthHdr>(ctx, 0)?;
+//     if unsafe { (*eth).ether_type } != EtherType::Ipv4 {
+//         return Ok(xdp_action::XDP_PASS);
+//     }
+//
+//     let ipv4 = ptr_at::<Ipv4Hdr>(ctx, EthHdr::LEN)?;
+//     if unsafe { (*ipv4).proto } != IpProto::Udp {
+//         return Ok(xdp_action::XDP_PASS);
+//     }
+//
+//     let udp = ptr_at::<UdpHdr>(ctx, EthHdr::LEN + Ipv4Hdr::LEN)?;
+//     let dst_port = u16::from_be(unsafe { (*udp).dest });
+//     let src_port = u16::from_be(unsafe { (*udp).source });
+//
+//     if src_port == 7777 || dst_port == 7777 {
+//         let event = XdpEvent {
+//             timestamp: unsafe { bpf_ktime_get_ns() },
+//             packet_size: (ctx.data_end() - ctx.data()) as u32,
+//             action: xdp_action::XDP_PASS,
+//         };
+//         unsafe {
+//             EVENTS.output(ctx, &event, 0);
+//         }
+//         info!(ctx, "Packet on port 7777 detected");
+//         match unsafe { bpf_redirect_map(addr_of!(&XSKS_MAP, 0, 0)) } {
+//             0 => Ok(xdp_action::XDP_REDIRECT),
+//             _ => {
+//                 info!(
+//                     ctx,
+//                     "failed to redirect to af_xdp, passing to network stack"
+//                 );
+//                 Ok(xdp_action::XDP_PASS)
+//             }
+//         }
+//     } else {
+//         Ok(xdp_action::XDP_PASS)
+//     }
+//
+//     Ok(xdp_action::XDP_PASS)
+// }
