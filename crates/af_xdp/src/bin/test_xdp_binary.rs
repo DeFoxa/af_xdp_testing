@@ -39,10 +39,7 @@ async fn main() -> Result<()> {
 
     let program: &mut Xdp = bpf.program_mut("af_xdp_router").unwrap().try_into()?;
     program.load()?;
-    program.attach(
-        /* &opt.iface */ "enp97s0f1",
-        /* XdpFlags::SKB_MODE */ XdpFlags::default(),
-    )?;
+    program.attach("enp97s0f1", XdpFlags::default())?;
 
     info!("waiting for ctrl-c");
     signal::ctrl_c().await?;
@@ -51,6 +48,6 @@ async fn main() -> Result<()> {
     Ok(())
 }
 
-fn setup_loggin() {
+fn setup_logging() {
     Builder::from_env(Env::default().default_filter_or("info")).init();
 }
