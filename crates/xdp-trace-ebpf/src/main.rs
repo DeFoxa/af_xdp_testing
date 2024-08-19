@@ -62,8 +62,7 @@ fn try_af_xdp_router(ctx: &XdpContext) -> Result<u32, u32> {
             EVENTS.output(ctx, &event, 0);
         }
         info!(ctx, "Packet on port 7777 detected");
-        // currently set up to notify when packet on port 7777, but allow all traffic to pass.
-        // TODO: setup af_xdp socket and redirect packets on 7777 to af_xdp socket
+
         match unsafe { bpf_redirect_map(ptr::addr_of!(XSKS_MAP) as *mut _, 0, 0) } {
             0 => Ok(xdp_action::XDP_REDIRECT),
             _ => {
@@ -75,10 +74,9 @@ fn try_af_xdp_router(ctx: &XdpContext) -> Result<u32, u32> {
             }
         }
     } else {
+        info!(ctx, "packet on wrong port");
         Ok(xdp_action::XDP_PASS)
     }
-
-    // Ok(xdp_action::XDP_PASS)
 }
 #[inline(always)]
 fn ptr_at<T>(ctx: &XdpContext, offset: usize) -> Result<*const T, u32> {
