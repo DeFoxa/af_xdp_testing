@@ -74,7 +74,6 @@ fn try_af_xdp_router(ctx: &XdpContext) -> Result<u32, u32> {
             }
         }
     } else {
-        info!(ctx, "packet on wrong port");
         Ok(xdp_action::XDP_PASS)
     }
 }
