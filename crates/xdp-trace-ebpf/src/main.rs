@@ -31,14 +31,14 @@ static mut EVENTS: PerfEventArray<XdpEvent> = PerfEventArray::new(0);
 static mut XSKS_MAP: XskMap = XskMap::with_max_entries(1, 0);
 
 #[xdp]
-pub fn xdp_tracer(ctx: XdpContext) -> u32 {
-    match try_xdp_tracer(&ctx) {
+pub fn af_xdp_router(ctx: XdpContext) -> u32 {
+    match try_af_xdp_router(&ctx) {
         Ok(action) => action,
         Err(_) => xdp_action::XDP_ABORTED,
     }
 }
 #[inline(always)]
-fn try_xdp_tracer(ctx: &XdpContext) -> Result<u32, u32> {
+fn try_af_xdp_router(ctx: &XdpContext) -> Result<u32, u32> {
     let eth = ptr_at::<EthHdr>(ctx, 0)?;
     if unsafe { (*eth).ether_type } != EtherType::Ipv4 {
         return Ok(xdp_action::XDP_PASS);
