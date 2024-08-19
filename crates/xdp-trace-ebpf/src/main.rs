@@ -51,7 +51,7 @@ fn try_xdp_tracer(ctx: &XdpContext) -> Result<u32, u32> {
 
     let udp = ptr_at::<UdpHdr>(ctx, EthHdr::LEN + Ipv4Hdr::LEN)?;
     let dst_port = u16::from_be(unsafe { (*udp).dest });
-    let _src_port = u16::from_be(unsafe { (*udp).source });
+    // let _src_port = u16::from_be(unsafe { (*udp).source });
 
     if dst_port == 7777 {
         let event = XdpEvent {
@@ -69,25 +69,6 @@ fn try_xdp_tracer(ctx: &XdpContext) -> Result<u32, u32> {
 
     Ok(xdp_action::XDP_PASS)
 }
-
-fn should_process_packet(ctx: &XdpContext) -> Result<bool, u32> {
-    let eth = ptr_at::<EthHdr>(ctx, 0).unwrap();
-    if unsafe { (*eth).ether_type } != EtherType::Ipv4 {
-        return Ok(false);
-    }
-
-    let ipv4 = ptr_at::<Ipv4Hdr>(ctx, EthHdr::LEN).unwrap();
-    if unsafe { (*ipv4).proto } != IpProto::Udp {
-        return Ok(false);
-    }
-
-    let udp = ptr_at::<UdpHdr>(ctx, EthHdr::LEN + Ipv4Hdr::LEN).unwrap();
-    let dst_port = u16::from_be(unsafe { (*udp).dest });
-    let src_port = u16::from_be(unsafe { (*udp).source });
-
-    Ok(src_port == 7777 || dst_port == 7777)
-}
-
 #[inline(always)]
 fn ptr_at<T>(ctx: &XdpContext, offset: usize) -> Result<*const T, u32> {
     let start = ctx.data();
@@ -149,3 +130,24 @@ fn panic(_info: &PanicInfo) -> ! {
 //
 //     Ok(xdp_action::XDP_PASS)
 // }
+//
+//
+// OLD
+// fn should_process_packet(ctx: &XdpContext) -> Result<bool, u32> {
+//     let eth = ptr_at::<EthHdr>(ctx, 0).unwrap();
+//     if unsafe { (*eth).ether_type } != EtherType::Ipv4 {
+//         return Ok(false);
+//     }
+//
+//     let ipv4 = ptr_at::<Ipv4Hdr>(ctx, EthHdr::LEN).unwrap();
+//     if unsafe { (*ipv4).proto } != IpProto::Udp {
+//         return Ok(false);
+//     }
+//
+//     let udp = ptr_at::<UdpHdr>(ctx, EthHdr::LEN + Ipv4Hdr::LEN).unwrap();
+//     let dst_port = u16::from_be(unsafe { (*udp).dest });
+//     let src_port = u16::from_be(unsafe { (*udp).source });
+//
+//     Ok(src_port == 7777 || dst_port == 7777)
+// }
+//
