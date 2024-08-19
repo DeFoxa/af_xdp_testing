@@ -37,7 +37,7 @@ async fn main() -> Result<()> {
         log::warn!("failure to initialize eBPF logger {}", e);
     }
 
-    let program: &mut Xdp = bpf.program_mut("xdp_tracer").unwrap().try_into()?;
+    let program: &mut Xdp = bpf.program_mut("af_xdp_router").unwrap().try_into()?;
     program.load()?;
     program.attach(
         /* &opt.iface */ "enp97s0f1",
