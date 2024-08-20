@@ -9,8 +9,6 @@ pub fn setup_udp_server() -> Result<()> {
     let mut buf = [0; 1024];
 
     loop {
-        let (amt, src) = socket.recv_from(&mut buf)?;
-        println!("received {} bytes, from {}", amt, src);
-        println!("data: {}", String::from_utf8_lossy(&buf[..amt]));
+        socket.recv_from(&mut buf)?;
     }
 }
