@@ -63,9 +63,10 @@ async fn main() -> Result<()> {
     // xsks_map.set(0, socket.fd(), 0)?;
 
     loop {
-        //NOTE: don't think this setup will work properly for application due to the lack of
-        // specific management logic for queues. keep it simple for initial testing.
+        //NOTE: this impl wont work properly for application due to the lack of
+        // management logic for queues
         // TODO: fix above when appropriate
+
         unsafe { fq.produce(&mut frame_desc) };
 
         // if let Some(descs) = rx_q.consume() {
