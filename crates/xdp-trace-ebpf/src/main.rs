@@ -61,7 +61,7 @@ fn try_af_xdp_router(ctx: &XdpContext) -> Result<u32, u32> {
         unsafe {
             EVENTS.output(ctx, &event, 0);
         }
-        info!(ctx, "Packet on port 7777 detected");
+        info!(ctx, "xdp event timestamp {}", event.timestamp);
 
         match unsafe { bpf_redirect_map(ptr::addr_of!(XSKS_MAP) as *mut _, 0, 0) } {
             0 => Ok(xdp_action::XDP_REDIRECT),
