@@ -31,3 +31,7 @@ harness = false
 name = "test_xdp_binary"
 path = "src/bin/test_xdp_binary.rs"
 
+[[bin]]
+name = "af_xdp"
+path = "src/bin/test_af_xdp_program.rs"
+
