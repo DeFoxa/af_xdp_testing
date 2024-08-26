@@ -22,6 +22,7 @@ use xsk_rs::{
 };
 
 const INTERFACE: &str = "enp97s0f1";
+const DEFAULT_TIMEOUT: i32 = 30;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -54,7 +55,7 @@ async fn main() -> Result<()> {
         Socket::new(
             SocketConfig::default(),
             &umem,
-            &Interface::from_str(INTERFACE).unwrap(),
+            &Interface::from_str(INTERFACE)?,
             0,
         )?
     };
@@ -67,6 +68,10 @@ async fn main() -> Result<()> {
         // management logic for queues
         // TODO: fix above when appropriate
 
+        // NOTE: wake-up methods only on tx_q send, not necessary on cq methods
+        // NOTE: user space interaction with umem data should involve operations on data in shared
+        // memory. i.e. no copy or movement of data to user_space. write method into xdp program (not sure if this should be in the xdp program bin or xdp lib - test xdp program first), that takes closure for data manipulation operation (dependent upon type of operation, try Fn closure, if necessary FnMut)
+
         unsafe { fq.produce(&mut frame_desc) };
 
         // if let Some(descs) = rx_q.consume() {
@@ -78,12 +83,7 @@ async fn main() -> Result<()> {
 
         unsafe { tx_q.produce_and_wakeup(&frame_desc[..1]) };
 
-        let poll_timeout: i32 = 100;
-
-        let pkts_recvd = unsafe {
-            rx_q.poll_and_consume(&mut frame_desc, poll_timeout)
-                .unwrap()
-        };
+        let pkts_recvd = unsafe { rx_q.poll_and_consume(&mut frame_desc, DEFAULT_TIMEOUT)? };
 
         for recv_desc in frame_desc.iter().take(pkts_recvd) {
             let data = unsafe { umem.data(recv_desc) };
