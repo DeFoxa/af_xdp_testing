@@ -15,6 +15,10 @@ network-types = "0.0.6"
 name = "xdp-trace-ebpf"
 path = "src/main.rs"
 
+[lib]
+name = "xdp_trace_ebpf"
+path = "src/lib.rs"
+
 [profile.dev]
 opt-level = 3
 debug = false
